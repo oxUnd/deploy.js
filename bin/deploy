@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+
+function parseArgv() {
+    var argv = process.argv;
+    var opts = {};
+    for (var i = 0, len = argv.length; i < len; i+=2) {
+        var cur = argv[i];
+
+        if (cur == '-h' || cur == '--help') {
+            opts['help'] = true;
+        }
+
+        if (cur == '-v' || cur == '--version') {
+            opts['version'] = true;
+        }
+
+        if (cur == '-r' || cur == '--root') {
+            var path = require('path');
+            opts['root'] = path.resolve(argv[i+1]);
+        }
+    }
+    return opts;
+}
+
+function printVersion() {
+    console.log(require('../package.json').version);
+    process.exit();
+}
+
+function printHelp() {
+    var mstring = require('mstring');
+    console.log(mstring(function () {
+        /***
+    Usage:
+              deploy -r <dir>
+    
+    Options:
+              -r, --root      set root path
+              -v, --version   print the version of deploy
+              -h, --help      display this message
+
+    Examples:
+              deploy -r /home/user/dir
+        ***/
+    }));
+    process.exit();
+}
+
+(function main() {
+    var opts = parseArgv();
+    if (opts['help']) {
+        printHelp();
+    }
+
+    if (opts['version']) {
+        printVersion();
+    }
+
+    if (!opts['root']) {
+        printHelp();
+    }
+
+    var spawn = require('child_process').spawn;
+    var god = spawn('node', [__dirname + '/../upload.js'], {
+        cwd: opts['root']
+    });
+    var str = '';
+    god.stdout.on('data', function (c) {
+        str += c.toString();
+    });
+    god.stdout.on('end', function () {
+        console.log(str);
+        var Deploy = require('..');
+        var w = new Deploy(
+                ['**'],
+                'node ' + __dirname + '/../upload.js',
+                opts
+            );
+    });
+    god.stderr.pipe(process.stderr);
+})();

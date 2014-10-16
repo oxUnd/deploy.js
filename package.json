@@ -1,0 +1,26 @@
+{
+  "name": "deploy.js",
+  "version": "0.0.4",
+  "description": "...",
+  "main": "index.js",
+  "bin": {
+    "deploy": "bin/deploy"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fis-plus",
+    "fis",
+    "jello",
+    "yogurt"
+  ],
+  "author": "fansekey",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "2.1.0",
+    "glob": "4.0.6",
+    "mstring": "0.1.2",
+    "rewatch": "0.4.0"
+  }
+}
